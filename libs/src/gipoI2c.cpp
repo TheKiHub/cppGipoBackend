@@ -3,7 +3,6 @@
 //
 
 #include "gipoI2c.hpp"
-#include "imgui.h"
 
 #if MRAA
 gipoI2c::gipoI2c(uint8_t busAddress) : m_i2c{mraa::I2c(0)} {
@@ -43,6 +42,7 @@ uint8_t gipoI2c::I2CWriteReg8 (uint8_t reg, uint8_t data) {
 }
 #else
     #if USE_GUI
+        #include "imgui.h"
         void gipoI2c::render() {
             ImGui::Begin("I2c");
             ImGui::Text("On channel = %d", m_i2cAddress);

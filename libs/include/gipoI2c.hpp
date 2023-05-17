@@ -61,6 +61,11 @@ class gipoI2c {
  * @return Result of operation
  */
   uint8_t I2CWriteReg8(uint8_t reg, uint8_t data);
+#if USE_GUI
+  int inputByte {0};
+  std::vector<uint8_t> buf {'c'};
+  void render();
+#endif
 };
 
 #endif //LIBS_INCLUDE_GIPO_I2C_HPP_

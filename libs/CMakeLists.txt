@@ -1,22 +1,23 @@
 #-------------------------------------------------------------------------------------------------------
 # Create target
 #-------------------------------------------------------------------------------------------------------
-project(gipoLibrary VERSION 0.1.0 LANGUAGES CXX)
-
 message(DEBUG "Creating ${PROJECT_NAME}")
 
-add_library(${PROJECT_NAME}
-        src/gipoI2c.cpp
-        src/pwm.cpp
-)
+add_library(${PROJECT_NAME})
+
+target_sources(${PROJECT_NAME}
+        PRIVATE
+            src/gipoI2c.cpp
+            src/pwm.cpp
+        )
 
 # define relocatable include files for target
 target_include_directories(${PROJECT_NAME}
         PUBLIC
-        $<INSTALL_INTERFACE:include>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+            $<INSTALL_INTERFACE:include>
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/src
+            ${CMAKE_CURRENT_SOURCE_DIR}/src
         )
 
 # add alias for easier use
@@ -24,12 +25,20 @@ add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 
 # enable all compiler specific warnings for the target
 set_target_warnings(${PROJECT_NAME})
+set_target_cpp_compiler_flags(${PROJECT_NAME})
 
 #-------------------------------------------------------------------------------------------------------
 # Declare dependencies
 #-------------------------------------------------------------------------------------------------------
 handleExternals(NAME quill)
+
+target_link_libraries(${PROJECT_NAME}
+        PUBLIC
+            quill
+        )
+
 option(GIPOBACKEND_MRAA "Using mraa as Gipo backend" OFF)
+option(USE_GUI "Using the Gui instead of the terminal" OFF)
 
 if(GIPOBACKEND_MRAA)
     target_compile_definitions(${PROJECT_NAME} PUBLIC MRAA)
@@ -41,15 +50,23 @@ if(GIPOBACKEND_MRAA)
     message(DEBUG "Using mraa for Gipo backend")
 else()
     message(DEBUG "Using no Gipo backend")
-    if(USE_GUI_WITHOUT_BACKEND)
-
+    if(USE_GUI)
+        target_compile_definitions(${PROJECT_NAME} PUBLIC USE_GUI)
+        target_sources(${PROJECT_NAME}
+            PRIVATE
+                src/gui.cpp
+            )
+        CPMAddPackage(
+            NAME imGuiBackend
+            URL https://github.com/TheKiHub/imGuiBackend/releases/latest/download/package_files.zip
+            VERSION latest
+        )
+        target_link_libraries(${PROJECT_NAME}
+            PUBLIC
+                guiBackend
+            )
     endif()
 endif()
-
-target_link_libraries(${PROJECT_NAME}
-        PUBLIC
-            quill
-        )
 
 #-------------------------------------------------------------------------------------------------------
 # Installation

@@ -12,16 +12,18 @@
     #include "mraa/pwm.hpp"
 #endif
 
-class pwm {
+class gipoPwmPin {
 #if MRAA
   mraa::Pwm m_pwm;
 #endif
 
   quill::Logger *logger = quill::get_logger();
+  int m_pin;
 
  public:
-  explicit pwm(int pin);
+  explicit gipoPwmPin(int pin);
   void setValue(float value);
+  [[nodiscard]] int getPin() const;
 };
 
 #endif //GIPO_LIBS_INCLUDE_PWM_HPP_

@@ -7,8 +7,10 @@ add_library(${PROJECT_NAME})
 
 target_sources(${PROJECT_NAME}
         PRIVATE
-            src/gipoI2c.cpp
-            src/pwm.cpp
+        src/gipoManager.cpp
+            src/gipoI2cBus.cpp
+            src/i2cDevice.cpp
+            src/gipoPwmPin.cpp
         )
 
 # define relocatable include files for target
@@ -26,6 +28,7 @@ add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 # enable all compiler specific warnings for the target
 set_target_warnings(${PROJECT_NAME})
 set_target_cpp_compiler_flags(${PROJECT_NAME})
+set_target_properties(${PROJECT_NAME} PROPERTIES UNITY_BUILD ON)
 
 #-------------------------------------------------------------------------------------------------------
 # Declare dependencies
@@ -40,6 +43,23 @@ target_link_libraries(${PROJECT_NAME}
 option(GIPOBACKEND_MRAA "Using mraa as Gipo backend" OFF)
 option(USE_GUI "Using the Gui instead of the terminal" OFF)
 
+if(USE_GUI)
+    target_compile_definitions(${PROJECT_NAME} PUBLIC USE_GUI)
+#    target_sources(${PROJECT_NAME}
+#            PRIVATE
+#            src/gui.cpp
+#            )
+    CPMAddPackage(
+            NAME imGuiBackend
+            URL https://github.com/TheKiHub/imGuiBackend/releases/latest/download/package_files.zip
+            VERSION latest
+    )
+    target_link_libraries(${PROJECT_NAME}
+            PUBLIC
+                guiBackend
+            )
+endif()
+
 if(GIPOBACKEND_MRAA)
     target_compile_definitions(${PROJECT_NAME} PUBLIC MRAA)
     handleExternals(NAME mraa)
@@ -50,22 +70,6 @@ if(GIPOBACKEND_MRAA)
     message(DEBUG "Using mraa for Gipo backend")
 else()
     message(DEBUG "Using no Gipo backend")
-    if(USE_GUI)
-        target_compile_definitions(${PROJECT_NAME} PUBLIC USE_GUI)
-        target_sources(${PROJECT_NAME}
-            PRIVATE
-                src/gui.cpp
-            )
-        CPMAddPackage(
-            NAME imGuiBackend
-            URL https://github.com/TheKiHub/imGuiBackend/releases/latest/download/package_files.zip
-            VERSION latest
-        )
-        target_link_libraries(${PROJECT_NAME}
-            PUBLIC
-                guiBackend
-            )
-    endif()
 endif()
 
 #-------------------------------------------------------------------------------------------------------

@@ -5,34 +5,38 @@
 #ifndef LIBS_INCLUDE_GIPO_I2C_HPP_
 #define LIBS_INCLUDE_GIPO_I2C_HPP_
 
-#include "quill/Quill.h"
-
 #if MRAA
-    #include "mraa/common.hpp"
     #include "mraa/i2c.hpp"
 #endif
 
-class gipoI2c {
+#include "quill/Quill.h"
+
+#if USE_GUI
+    #include <imgui.h>
+#endif
+
+class i2cDevice {
 #if MRAA
-  mraa::I2c m_i2c;
+  mraa::I2c& m_i2c;
+#else
+  std::vector<std::uint8_t> simulatedBytes;
+    bool loop = false;
 #endif
 
   quill::Logger *m_logger = quill::get_logger();
   uint8_t m_i2cAddress;
 
  public:
+  [[nodiscard]] uint8_t getAddress() const;
+
+#if MRAA
   /***
    * Class for communicating with the i2c bus interface.
    * @param busAddress The i2c bus address to communicate on. This depends on the peripheral device and is defined by the manufacturer.
    */
-  explicit gipoI2c(uint8_t busAddress);
-
-  /***
-  * Class for communicating with the i2c bus interface.
-  * @param busAddress The i2c bus address to communicate on. This depends on the peripheral device and is defined by the manufacturer.
-  * @param busNumber The i2c bus number if there are multiple busses. If there is only one bus 0 should be used in most cases.
-  */
-  gipoI2c(uint8_t busAddress, uint8_t busNumber);
+  i2cDevice(uint8_t busAddress, mraa::I2c& i2c);
+#endif
+  explicit i2cDevice(uint8_t busAddress);
 
   /***
    * Read one byte from the bus
@@ -61,10 +65,13 @@ class gipoI2c {
  * @return Result of operation
  */
   uint8_t I2CWriteReg8(uint8_t reg, uint8_t data);
+
 #if USE_GUI
-  int inputByte {0};
-  std::vector<uint8_t> buf {'c'};
   void render();
+  int inputByte {0}, addressChange {0};
+  std::unordered_map<uint8_t, std::vector<std::uint8_t>> allSimulatedBytes;
+  ImU8 simulatedByte{0};
+  char buf1[64] = "";
 #endif
 };
 

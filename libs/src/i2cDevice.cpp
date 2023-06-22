@@ -34,33 +34,6 @@ uint8_t i2cDevice::I2CWriteReg8 (uint8_t reg, uint8_t data) {
 }
 
 #else
-    #if USE_GUI
-        #include "imgui.h"
-        void i2cDevice::render() {
-            ImGui::Begin("GIPO");
-            ImGui::InputInt("Change", &addressChange);
-            if (ImGui::Button("Change Address"))
-                m_i2cAddress = static_cast<uint8_t>(addressChange);
-
-            ImGui::Text("Write on address = %d", m_i2cAddress);
-            ImGui::InputInt("Byte", &inputByte);
-            if (ImGui::Button("Write Byte"))
-                I2CWrite(static_cast<uint8_t>(inputByte));
-
-            ImGui::Text("Simulate");
-            ImGui::Separator();
-
-            static const ImU8 u8_min  = 0, u8_max = 255;
-            ImGui::SliderScalar("Byte value", ImGuiDataType_U8, &simulatedByte, &u8_min, &u8_max, "%u");
-            if (ImGui::Button("Push byte"))
-                simulatedBytes.emplace_back(simulatedByte);
-
-            ImGui::Checkbox("Loop", &loop);
-
-            ImGui::End();
-        }
-    #endif
-
     i2cDevice::i2cDevice(uint8_t busAddress) {
         m_i2cAddress = busAddress;
         LOG_TRACE_L3(m_logger, "I2C ready on address: {}", busAddress);
@@ -106,3 +79,27 @@ uint8_t i2cDevice::I2CWriteReg8 (uint8_t reg, uint8_t data) {
 uint8_t i2cDevice::getAddress() const {
     return m_i2cAddress;
 }
+
+#if USE_GUI
+    void i2cDevice::render() {
+        if(!m_shouldRender) return;
+        std::string name = "i2cDevice on address ";
+        name += std::to_string(static_cast<int>(m_i2cAddress));
+        ImGui::Begin(name.c_str(), &m_shouldRender);
+
+        ImGui::InputInt("Byte", &inputByte);
+        if (ImGui::Button("Write Byte"))
+            I2CWrite(static_cast<uint8_t>(inputByte));
+
+        ImGui::Text("Simulate");
+        ImGui::Separator();
+
+        constexpr ImU8 u8_min  = 0, u8_max = 255;
+        ImGui::SliderScalar("Byte value", ImGuiDataType_U8, &simulatedByte, &u8_min, &u8_max, "%u");
+        if (ImGui::Button("Push byte"))
+            simulatedBytes.emplace_back(simulatedByte);
+
+        ImGui::Checkbox("Loop", &loop);
+        ImGui::End();
+    }
+#endif

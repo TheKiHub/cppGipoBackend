@@ -11,7 +11,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char **argv) {
     pwm2.setValue(10);
 
 
-    auto i2cDevice = gipoManager::getInstance().i2c(1, 75);
+    auto i2cDevice = gipoManager::getInstance().getI2cDevice(1, 75);
     LOG_INFO(quill::get_logger(), "Read byte: {}", i2cDevice.I2CRead());
 
     return 0;

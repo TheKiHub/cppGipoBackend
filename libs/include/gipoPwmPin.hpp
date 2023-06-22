@@ -24,6 +24,7 @@ class gipoPwmPin {
   explicit gipoPwmPin(int pin);
   void setValue(float value);
   [[nodiscard]] int getPin() const;
+
 };
 
 #endif //GIPO_LIBS_INCLUDE_PWM_HPP_

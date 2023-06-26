@@ -6,7 +6,7 @@
 
 #if MRAA
 i2cDevice::i2cDevice(uint8_t busAddress, mraa::I2c &i2c) : m_i2c{i2c}, m_i2cAddress{busAddress} {
-    LOG_TRACE_L3(m_logger, "I2C Pin initialized using address: {}", busAddress);
+    LOG_TRACE_L1(m_logger, "I2C Pin initialized using address: {}", busAddress);
 }
 
 uint8_t i2cDevice::I2CRead() {
@@ -34,9 +34,8 @@ uint8_t i2cDevice::I2CWriteReg8 (uint8_t reg, uint8_t data) {
 }
 
 #else
-    i2cDevice::i2cDevice(uint8_t busAddress) {
-        m_i2cAddress = busAddress;
-        LOG_TRACE_L3(m_logger, "I2C ready on address: {}", busAddress);
+    i2cDevice::i2cDevice(uint8_t busAddress) : m_i2cAddress{busAddress} {
+        LOG_TRACE_L1(m_logger, "I2C ready on address: {}", busAddress);
     }
 
     uint8_t i2cDevice::I2CWrite(uint8_t data) {
@@ -83,9 +82,7 @@ uint8_t i2cDevice::getAddress() const {
 #if USE_GUI
     void i2cDevice::render() {
         if(!m_shouldRender) return;
-        std::string name = "i2cDevice on address ";
-        name += std::to_string(static_cast<int>(m_i2cAddress));
-        ImGui::Begin(name.c_str(), &m_shouldRender);
+        ImGui::Begin(fmt::format("i2cDevice on address {:d}", m_i2cAddress).c_str(), &m_shouldRender);
 
         ImGui::InputInt("Byte", &inputByte);
         if (ImGui::Button("Write Byte"))

@@ -9,15 +9,15 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char **argv) {
     if (gui.createWindow() != 0) {
         return -1;
     }
-//    auto i2cDevice = gipoManager::getInstance().getI2cDevice(0, 65);
-//
-//    // Create a thread
-//    std::thread t([&]() {
-//      while (gui.checkWindow()) {
-//          i2cDevice.I2CRead();
-//          std::this_thread::sleep_for(std::chrono::milliseconds(500));
-//      }
-//    });
+    auto i2cDevice = gipoManager::getInstance().getI2cDevice(0, 65);
+
+    // Create a thread
+    std::thread t([&]() {
+      while (gui.checkWindow()) {
+          i2cDevice->I2CRead();
+          std::this_thread::sleep_for(std::chrono::milliseconds(500));
+      }
+    });
 
     while(gui.checkWindow()) {
         imGuiCustom::createFrame();
@@ -26,6 +26,6 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char **argv) {
     }
 
     // Join the thread
-//    t.join();
+    t.join();
     return 0;
 }

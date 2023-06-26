@@ -14,16 +14,17 @@ uint8_t gipoI2CBus::getBusNumber() const {
     return m_busNumber;
 }
 
-i2cDevice &gipoI2CBus::getDevice(uint8_t address) {
+std::shared_ptr<i2cDevice> gipoI2CBus::getDevice(uint8_t address) {
     for (auto& device : m_I2CDevices) {
-        if (device.getAddress() == address) {
+        if (device->getAddress() == address) {
             return device;
         }
     }
 #if MRAA
     return m_I2CDevices.emplace_back(address, m_i2c);
 #else
-    return m_I2CDevices.emplace_back(address);
+
+    return m_I2CDevices.emplace_back(std::make_shared<i2cDevice>(i2cDevice(address)));
 #endif
 }
 
@@ -31,7 +32,7 @@ i2cDevice &gipoI2CBus::getDevice(uint8_t address) {
     void gipoI2CBus::render() {
         if(!m_shouldRender) return;
 
-        ImGui::Begin(("I2c bus number" + std::to_string(static_cast<int>(m_busNumber))).c_str(), &m_shouldRender);
+        ImGui::Begin((fmt::format("I2c bus number{:d}", m_busNumber).c_str()), &m_shouldRender);
 
         static int address = 0;
         ImGui::InputInt("Address", &address);
@@ -41,10 +42,10 @@ i2cDevice &gipoI2CBus::getDevice(uint8_t address) {
             getDevice(static_cast<uint8_t>(address));
 
         for (auto& device : m_I2CDevices) {
-            if (ImGui::Button(("Address " + std::to_string(device.getAddress())).c_str()))
-                device.m_shouldRender = true;
+            if (ImGui::Button(("Address " + std::to_string(device->getAddress())).c_str()))
+                device->m_shouldRender = true;
 
-            device.render();
+            device->render();
             ImGui::SameLine();
         }
 

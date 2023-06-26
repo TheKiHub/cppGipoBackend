@@ -16,8 +16,8 @@
 class gipoManager {
   gipoManager() = default; // Private constructor to prevent instantiation
 
-  std::vector<gipoPwmPin> m_pwmVector;
-  std::vector<gipoI2CBus> m_i2CBusses;
+  std::vector<std::shared_ptr<gipoPwmPin>> m_pwmVector;
+  std::vector<std::shared_ptr<gipoI2CBus>> m_i2CBusses;
 
 #if USE_GUI
   enum vectorType{NONE, PWM, I2C};
@@ -33,9 +33,9 @@ class gipoManager {
   gipoManager& operator=(const gipoManager&) = delete; // Deleting assignment operator
 
   static gipoManager& getInstance();
-  gipoPwmPin& pwm(uint8_t pin);
-  i2cDevice& getI2cDevice(uint8_t bus, uint8_t address);
-  gipoI2CBus& getI2cBuses(uint8_t bus);
+  std::shared_ptr<gipoPwmPin> pwm(uint8_t pin);
+  std::shared_ptr<i2cDevice> getI2cDevice(uint8_t bus, uint8_t address);
+  std::shared_ptr<gipoI2CBus> getI2cBuses(uint8_t bus);
 
 #if USE_GUI
   void render();

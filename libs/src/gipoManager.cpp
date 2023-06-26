@@ -9,32 +9,32 @@ gipoManager& gipoManager::getInstance() {
     return instance;
 }
 
-gipoPwmPin &gipoManager::pwm(uint8_t pin) {
+std::shared_ptr<gipoPwmPin> gipoManager::pwm(uint8_t pin) {
     for (auto& pwmPin : m_pwmVector) {
-        if (pwmPin.getPin() == pin) {
+        if (pwmPin->getPin() == pin) {
             return pwmPin;
         }
     }
-    return m_pwmVector.emplace_back(pin);
+    return m_pwmVector.emplace_back(std::make_shared<gipoPwmPin>(pin));
 }
 
-i2cDevice &gipoManager::getI2cDevice(uint8_t bus, uint8_t address) {
+std::shared_ptr<i2cDevice> gipoManager::getI2cDevice(uint8_t bus, uint8_t address) {
     for (auto& i2cBus : m_i2CBusses) {
-        if (i2cBus.getBusNumber() == bus) {
-            return i2cBus.getDevice(address);
+        if (i2cBus->getBusNumber() == bus) {
+            return i2cBus->getDevice(address);
         }
     }
-    auto& newBus = m_i2CBusses.emplace_back(bus);
-    return newBus.getDevice(address);
+    auto& newBus = m_i2CBusses.emplace_back(std::make_shared<gipoI2CBus>(bus));
+    return newBus->getDevice(address);
 }
 
-gipoI2CBus &gipoManager::getI2cBuses(uint8_t bus) {
+std::shared_ptr<gipoI2CBus> gipoManager::getI2cBuses(uint8_t bus) {
     for (auto& i2cBus : m_i2CBusses) {
-        if (i2cBus.getBusNumber() == bus) {
+        if (i2cBus->getBusNumber() == bus) {
             return i2cBus;
         }
     }
-    return m_i2CBusses.emplace_back(bus);
+    return m_i2CBusses.emplace_back(std::make_shared<gipoI2CBus>(bus));
 }
 
 #if USE_GUI
@@ -73,8 +73,8 @@ gipoI2CBus &gipoManager::getI2cBuses(uint8_t bus) {
                             ImGui::EndDisabled();
                             break;
                         case I2C:
-                            if (ImGui::Button(fmt::format("I2C Bus {:d}",m_i2CBusses.at(pair.second).getBusNumber()).c_str()))
-                                m_i2CBusses.at(pair.second).m_shouldRender = true;
+                            if (ImGui::Button(fmt::format("I2C Bus {:d}",m_i2CBusses.at(pair.second)->getBusNumber()).c_str()))
+                                m_i2CBusses.at(pair.second)->m_shouldRender = true;
                             break;
                     }
                     if(toggle)
@@ -83,15 +83,15 @@ gipoI2CBus &gipoManager::getI2cBuses(uint8_t bus) {
                 }
 
                 for (auto& i2cBus : m_i2CBusses) {
-                    i2cBus.render();
+                    i2cBus->render();
                 }
             }
         } else {
             for (auto& i2cBus : m_i2CBusses) {
-                if (ImGui::Button(fmt::format("I2C Bus {:d}", i2cBus.getBusNumber()).c_str())) {
-                    i2cBus.m_shouldRender = true;
+                if (ImGui::Button(fmt::format("I2C Bus {:d}", i2cBus->getBusNumber()).c_str())) {
+                    i2cBus->m_shouldRender = true;
                 }
-                i2cBus.render();
+                i2cBus->render();
                 ImGui::SameLine();
             }
         }
@@ -112,7 +112,7 @@ gipoI2CBus &gipoManager::getI2cBuses(uint8_t bus) {
         ImGui::InputInt("Bus number", &busNumber);
         busNumber = static_cast<uint8_t>(busNumber);
         if(ImGui::Button("Add")) {
-            m_i2CBusses.emplace_back(static_cast<uint8_t>(busNumber));
+            getI2cBuses(static_cast<uint8_t>(busNumber));
             m_usedPins[static_cast<size_t>(clPin)] = std::make_pair(vectorType::I2C, m_i2CBusses.size() - 1);
             m_usedPins[static_cast<size_t>(dataPin)] = std::make_pair(vectorType::I2C, m_i2CBusses.size() - 1);
             openBool = false;
@@ -129,7 +129,7 @@ gipoI2CBus &gipoManager::getI2cBuses(uint8_t bus) {
         gipoNumber = static_cast<uint8_t>(gipoNumber);
 
         if(ImGui::Button("Add")) {
-            m_pwmVector.emplace_back(gipoNumber);
+            m_pwmVector.emplace_back(std::make_shared<gipoPwmPin>(gipoNumber));
             m_usedPins[pin] = std::make_pair(vectorType::PWM, m_usedPins.size() - 1);
             openBool = false;
         }

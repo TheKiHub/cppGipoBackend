@@ -16,7 +16,7 @@ class gipoI2CBus {
   mraa::I2c m_i2c;
 #endif
     uint8_t m_busNumber;
-    std::vector<i2cDevice> m_I2CDevices;
+    std::vector<std::shared_ptr<i2cDevice>> m_I2CDevices;
 
     public:
 
@@ -33,7 +33,7 @@ class gipoI2CBus {
       * returns the reference to a communication device connected on the address
       * @param busAddress The getI2cDevice bus address to communicate on. This depends on the peripheral device and is defined by the manufacturer.
       */
-      i2cDevice& getDevice(uint8_t address);
+      std::shared_ptr<i2cDevice> getDevice(uint8_t address);
 
 #if USE_GUI
     void render();

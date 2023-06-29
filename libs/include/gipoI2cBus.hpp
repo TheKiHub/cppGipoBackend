@@ -5,6 +5,11 @@
 #ifndef GIPOBACKEND_LIBS_INCLUDE_GIPOI2CBUS_HPP_
 #define GIPOBACKEND_LIBS_INCLUDE_GIPOI2CBUS_HPP_
 
+
+#include <vector>
+#include <memory>
+#include "i2cDevice.hpp"
+
 #if MRAA
     #include "mraa/common.hpp"
     #include "mraa/i2c.hpp"

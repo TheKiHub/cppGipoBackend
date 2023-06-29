@@ -40,24 +40,6 @@ target_link_libraries(${PROJECT_NAME}
         )
 
 option(GIPOBACKEND_MRAA "Using mraa as Gipo backend" OFF)
-option(GIPO_MANAGER_GUI "Using the Gui instead of the terminal" OFF)
-
-if(GIPO_MANAGER_GUI)
-    target_compile_definitions(${PROJECT_NAME} PUBLIC USE_GUI)
-#    target_sources(${PROJECT_NAME}
-#            PRIVATE
-#            src/gui.cpp
-#            )
-    CPMAddPackage(
-            NAME imGuiBackend
-            URL https://github.com/TheKiHub/imGuiBackend/releases/latest/download/package_files.zip
-            VERSION latest
-    )
-    target_link_libraries(${PROJECT_NAME}
-            PUBLIC
-                guiBackend
-            )
-endif()
 
 if(GIPOBACKEND_MRAA)
     target_compile_definitions(${PROJECT_NAME} PUBLIC MRAA)
@@ -69,6 +51,19 @@ if(GIPOBACKEND_MRAA)
     message(DEBUG "Using mraa for Gipo backend")
 else()
     message(DEBUG "Using no Gipo backend")
+    option(GIPO_MANAGER_GUI "Using the Gui instead of the terminal" OFF)
+    if(GIPO_MANAGER_GUI)
+        target_compile_definitions(${PROJECT_NAME} PUBLIC USE_GUI)
+        CPMAddPackage(
+                NAME imGuiBackend
+                URL https://github.com/TheKiHub/imGuiBackend/releases/latest/download/package_files.zip
+                VERSION latest
+        )
+        target_link_libraries(${PROJECT_NAME}
+                PUBLIC
+                    guiBackend
+                )
+    endif()
 endif()
 
 #-------------------------------------------------------------------------------------------------------

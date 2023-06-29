@@ -2,6 +2,7 @@
 // Created by Kim Huber on 6/12/23.
 //
 
+
 #include "gipoI2cBus.hpp"
 
 #if MRAA
@@ -21,9 +22,8 @@ std::shared_ptr<i2cDevice> gipoI2CBus::getDevice(uint8_t address) {
         }
     }
 #if MRAA
-    return m_I2CDevices.emplace_back(address, m_i2c);
+    return m_I2CDevices.emplace_back(std::make_shared<i2cDevice>(address, m_i2c));
 #else
-
     return m_I2CDevices.emplace_back(std::make_shared<i2cDevice>(i2cDevice(address)));
 #endif
 }

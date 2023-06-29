@@ -6,6 +6,7 @@
 #define LIBS_INCLUDE_GIPO_I2C_HPP_
 
 #include "quill/Quill.h"
+#include <memory>
 
 #if MRAA
     #include "mraa/i2c.hpp"
@@ -34,8 +35,10 @@ class i2cDevice {
    * @param busAddress The i2c bus address to communicate on. This depends on the peripheral device and is defined by the manufacturer.
    */
   i2cDevice(uint8_t busAddress, mraa::I2c& getI2cDevice);
-#endif
+#else
   explicit i2cDevice(uint8_t busAddress);
+#endif
+
 
   /***
    * Read one byte from the bus

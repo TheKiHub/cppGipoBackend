@@ -8,7 +8,7 @@
 #include "quill/Quill.h"
 
 #if MRAA
-    #include "mraa/getI2cDevice.hpp"
+    #include "mraa/i2c.hpp"
 #endif
 #if USE_GUI
     #include <imgui.h>

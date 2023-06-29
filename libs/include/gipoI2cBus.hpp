@@ -7,7 +7,7 @@
 
 #if MRAA
     #include "mraa/common.hpp"
-    #include "mraa/getI2cDevice.hpp"
+    #include "mraa/i2c.hpp"
 #endif
 
 

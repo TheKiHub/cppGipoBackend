@@ -28,7 +28,6 @@ add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 # enable all compiler specific warnings for the target
 set_target_warnings(${PROJECT_NAME})
 set_target_cpp_compiler_flags(${PROJECT_NAME})
-set_target_properties(${PROJECT_NAME} PROPERTIES UNITY_BUILD ON)
 
 #-------------------------------------------------------------------------------------------------------
 # Declare dependencies

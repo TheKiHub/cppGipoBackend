@@ -7,7 +7,7 @@ add_library(${PROJECT_NAME})
 
 target_sources(${PROJECT_NAME}
         PRIVATE
-        src/gipoManager.cpp
+            src/gipoManager.cpp
             src/gipoI2cBus.cpp
             src/i2cDevice.cpp
             src/gipoPwmPin.cpp
@@ -41,9 +41,9 @@ target_link_libraries(${PROJECT_NAME}
         )
 
 option(GIPOBACKEND_MRAA "Using mraa as Gipo backend" OFF)
-option(USE_GUI "Using the Gui instead of the terminal" OFF)
+option(GIPO_MANAGER_GUI "Using the Gui instead of the terminal" OFF)
 
-if(USE_GUI)
+if(GIPO_MANAGER_GUI)
     target_compile_definitions(${PROJECT_NAME} PUBLIC USE_GUI)
 #    target_sources(${PROJECT_NAME}
 #            PRIVATE

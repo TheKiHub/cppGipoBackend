@@ -1,6 +1,5 @@
-#include "gipoPwmPin.hpp"
-#include "i2cDevice.hpp"
 #include "imGuiCustom.h"
+#include "gipoManager.hpp"
 
 int main([[maybe_unused]] int argc, [[maybe_unused]] char **argv) {
     imGuiCustom gui;
@@ -10,19 +9,19 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char **argv) {
     if (gui.createWindow() != 0) {
         return -1;
     }
-    auto i2c = gipoI2c(75);
+    auto i2cDevice = gipoManager::getInstance().getI2cDevice(0, 65);
 
     // Create a thread
     std::thread t([&]() {
       while (gui.checkWindow()) {
-          i2c.I2CRead();
+          i2cDevice->I2CRead();
           std::this_thread::sleep_for(std::chrono::milliseconds(500));
       }
     });
 
     while(gui.checkWindow()) {
         imGuiCustom::createFrame();
-        i2c.render();
+        gipoManager::getInstance().render();
         gui.renderFrame();
     }
 

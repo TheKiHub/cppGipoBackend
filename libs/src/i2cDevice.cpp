@@ -82,7 +82,7 @@ uint8_t i2cDevice::getAddress() const {
 #if USE_GUI
     void i2cDevice::render() {
         if(!m_shouldRender) return;
-        ImGui::Begin(fmt::format("i2cDevice on address {:d}", m_i2cAddress).c_str(), &m_shouldRender);
+        ImGui::Begin(fmtquill::format("i2cDevice on address {:d}", m_i2cAddress).c_str(), &m_shouldRender);
 
         ImGui::InputInt("Byte", &inputByte);
         if (ImGui::Button("Write Byte"))

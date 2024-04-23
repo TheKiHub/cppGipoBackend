@@ -32,7 +32,7 @@ std::shared_ptr<i2cDevice> gipoI2CBus::getDevice(uint8_t address) {
     void gipoI2CBus::render() {
         if(!m_shouldRender) return;
 
-        ImGui::Begin((fmt::format("I2c bus number{:d}", m_busNumber).c_str()), &m_shouldRender);
+        ImGui::Begin((fmtquill::format("I2c bus number{:d}", m_busNumber).c_str()), &m_shouldRender);
 
         static int address = 0;
         ImGui::InputInt("Address", &address);

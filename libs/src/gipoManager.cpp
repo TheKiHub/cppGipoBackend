@@ -62,7 +62,7 @@ std::shared_ptr<gipoI2CBus> gipoManager::getI2cBuses(uint8_t bus) {
                     auto index = &pair - &m_usedPins[0];
                     switch (pair.first) {
                         case NONE:
-                            if(ImGui::Button(fmt::format("+##{:d}", index).c_str())) {
+                            if(ImGui::Button(fmtquill::format("+##{:d}", index).c_str())) {
                                 openNewPin = true;
                                 currentPin = static_cast<size_t>(index);
                             }
@@ -73,7 +73,7 @@ std::shared_ptr<gipoI2CBus> gipoManager::getI2cBuses(uint8_t bus) {
                             ImGui::EndDisabled();
                             break;
                         case I2C:
-                            if (ImGui::Button(fmt::format("I2C Bus {:d}",m_i2CBusses.at(pair.second)->getBusNumber()).c_str()))
+                            if (ImGui::Button(fmtquill::format("I2C Bus {:d}",m_i2CBusses.at(pair.second)->getBusNumber()).c_str()))
                                 m_i2CBusses.at(pair.second)->m_shouldRender = true;
                             break;
                     }
@@ -88,7 +88,7 @@ std::shared_ptr<gipoI2CBus> gipoManager::getI2cBuses(uint8_t bus) {
             }
         } else {
             for (auto& i2cBus : m_i2CBusses) {
-                if (ImGui::Button(fmt::format("I2C Bus {:d}", i2cBus->getBusNumber()).c_str())) {
+                if (ImGui::Button(fmtquill::format("I2C Bus {:d}", i2cBus->getBusNumber()).c_str())) {
                     i2cBus->m_shouldRender = true;
                 }
                 i2cBus->render();
@@ -139,7 +139,7 @@ std::shared_ptr<gipoI2CBus> gipoManager::getI2cBuses(uint8_t bus) {
 
     void gipoManager::newPin(bool &openBool, size_t pin) {
         static bool showNewPwm, showNewI2c, showNewGipo, showNewNamedPin = false;
-        ImGui::Begin(fmt::format("Config pin {:d}", pin).c_str(), &openBool);
+        ImGui::Begin(fmtquill::format("Config pin {:d}", pin).c_str(), &openBool);
 
         if(ImGui::Button("Add named pin"))
             showNewGipo = true;
